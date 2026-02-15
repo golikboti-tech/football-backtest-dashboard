@@ -22,6 +22,9 @@
     .btn{background:#1e2d4c;color:#d8e7ff;border:1px solid #365084;border-radius:8px;padding:4px 8px;font-size:11px;cursor:pointer}
     .detail-row{display:table-row}
     .detail-box{padding:10px 8px;color:#c9dcff;line-height:1.4}
+    .vitem{border:1px solid #2a3f67;border-radius:10px;margin:8px 0;background:#0f1830}
+    .vitem summary{cursor:pointer;padding:10px 12px;color:#d9e7ff;font-weight:600}
+    .vbody{padding:0 12px 12px;color:#bdd0f3;font-size:12px;line-height:1.45}
     @media (max-width:900px){
       body{padding:12px}
       .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
@@ -44,7 +47,13 @@
     </div>
 
     <div class="panel">
-      <h3>All tickets</h3>
+      <h3>Version history (all iterations)</h3>
+      <div class="muted">Includes every saved version update. Ticket matches are shown in the table below.</div>
+      <div id="versions"></div>
+    </div>
+
+    <div class="panel">
+      <h3>All tickets (with matches)</h3>
       <table>
         <thead>
           <tr>
@@ -65,6 +74,8 @@
 
   <script>
     const d = window.TICKETS || [];
+    const versions = window.VERSIONS || [];
+
     const placed = d.filter(x => x.result !== 'SKIP').length;
     const wins = d.filter(x => x.result === 'WIN').length;
     const net = d.reduce((a,b) => a + Number(b.net_pl || 0), 0);
@@ -80,6 +91,17 @@
 
     document.getElementById('kpis').innerHTML = kpis.map(x => `
       <div class="card"><div>${x[0]}</div><div class="num">${x[1]}</div><div class="muted">${x[2]}</div></div>
+    `).join('');
+
+    document.getElementById('versions').innerHTML = versions.slice().reverse().map(v => `
+      <details class="vitem">
+        <summary>${v.version}</summary>
+        <div class="vbody">
+          <div><strong>Change:</strong> ${v.change || '-'}</div>
+          <div><strong>KPI delta:</strong> ${v.kpi || '-'}</div>
+          <div><strong>Result:</strong> ${v.conclusion || '-'}</div>
+        </div>
+      </details>
     `).join('');
 
     new Chart(document.getElementById('bankroll'), {
