@@ -20,7 +20,7 @@
     .win{color:#7df08f}.loss{color:#ff8f8f}
     .tag{font-size:11px;padding:2px 6px;border-radius:999px;border:1px solid #365084}
     .btn{background:#1e2d4c;color:#d8e7ff;border:1px solid #365084;border-radius:8px;padding:4px 8px;font-size:11px;cursor:pointer}
-    .detail-row{display:none}
+    .detail-row{display:table-row}
     .detail-box{padding:10px 8px;color:#c9dcff;line-height:1.4}
     @media (max-width:900px){
       body{padding:12px}
@@ -106,7 +106,7 @@
         <td class="hide-mobile">${Number(r.gross_return).toFixed(2)}</td>
         <td class="${r.net_pl>=0?'win':'loss'}">${Number(r.net_pl).toFixed(2)}</td>
         <td><span class="tag">${r.result}</span></td>
-        <td><button class="btn" data-target="${id}">Expand</button></td>
+        <td><button class="btn" data-target="${id}">Collapse</button></td>
       </tr>
       <tr id="${id}" class="detail-row">
         <td colspan="8" class="detail-box">
@@ -123,7 +123,7 @@
       const btn = e.target.closest('button[data-target]');
       if (!btn) return;
       const row = document.getElementById(btn.dataset.target);
-      const open = row.style.display === 'table-row';
+      const open = getComputedStyle(row).display !== 'none';
       row.style.display = open ? 'none' : 'table-row';
       btn.textContent = open ? 'Expand' : 'Collapse';
     });
