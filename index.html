@@ -47,9 +47,11 @@
     </div>
 
     <div class="panel">
-      <h3>Version history (all iterations)</h3>
-      <div class="muted">Includes every saved version update. Ticket matches are shown in the table below.</div>
-      <div id="versions"></div>
+      <h3>Version viewer</h3>
+      <div class="muted">Pick a version from dropdown to inspect its change/KPI/result.</div>
+      <select id="versionSelect" style="margin:10px 0;background:#0f1830;color:#eaf1ff;border:1px solid #365084;border-radius:8px;padding:8px;width:100%"></select>
+      <div id="versionCard"></div>
+      <details style="margin-top:10px"><summary style="cursor:pointer">Show all versions list</summary><div id="versions"></div></details>
     </div>
 
     <div class="panel">
@@ -93,7 +95,26 @@
       <div class="card"><div>${x[0]}</div><div class="num">${x[1]}</div><div class="muted">${x[2]}</div></div>
     `).join('');
 
-    document.getElementById('versions').innerHTML = versions.slice().reverse().map(v => `
+    const rev = versions.slice().reverse();
+    const sel = document.getElementById('versionSelect');
+    sel.innerHTML = rev.map((v,i)=>`<option value="${i}">${v.version}</option>`).join('');
+    function renderVersion(i){
+      const v = rev[i] || {};
+      document.getElementById('versionCard').innerHTML = `
+        <div class="vitem" open>
+          <div class="vbody" style="padding-top:12px">
+            <div><strong>Version:</strong> ${v.version || '-'}</div>
+            <div><strong>Change:</strong> ${v.change || '-'}</div>
+            <div><strong>KPI delta:</strong> ${v.kpi || '-'}</div>
+            <div><strong>Result:</strong> ${v.conclusion || '-'}</div>
+            <div class="muted" style="margin-top:8px">Matches table below shows latest backtest snapshot currently available.</div>
+          </div>
+        </div>`;
+    }
+    sel.addEventListener('change', ()=>renderVersion(Number(sel.value)));
+    renderVersion(0);
+
+    document.getElementById('versions').innerHTML = rev.map(v => `
       <details class="vitem">
         <summary>${v.version}</summary>
         <div class="vbody">
